@@ -1,42 +1,72 @@
+# FIXME: Skips player if they select a taken square
+
 board = [
     '-', '-', '-',
     '-', '-', '-',
     '-', '-', '-',
 ]
 
-def dashes(num_dashes: int) -> str:
-    out = ''
 
-    for _ in range(num_dashes):
-        out += '-'
+class TicTacToe:
+    def __init__(self, game_board):
+        self.board = game_board
 
-    return out
+    def print_board(self):
+        def dashes(num_dashes: int) -> str:
+            out = ''
+
+            for _ in range(num_dashes):
+                out += '-'
+
+            return out
+
+        print(self.board[0] + ' | ' + self.board[1] + ' | ' + self.board[2])
+        print(dashes(9))
+        print(self.board[3] + ' | ' + self.board[4] + ' | ' + self.board[5])
+        print(dashes(9))
+        print(self.board[6] + ' | ' + self.board[7] + ' | ' + self.board[8])
+
+    def player_input(self, current_player):
+        inp = int(input('Enter a number 0-8: '))
+
+        is_board_position = 0 <= inp <= 8
+        is_empty = self.board[inp] == '-'
+
+        if is_board_position and is_empty:
+            self.board[inp] = current_player
+
+    def game_loop(self, is_running=True, current_player='X'):
+        while is_running:
+            self.print_board()
+            self.player_input(current_player)
+
+            if current_player == 'X':
+                current_player = 'O'
+
+            elif current_player == 'O':
+                current_player = 'X'
+
+            game = CheckGame(self.board)
+            # winner
+            if game.winner() is not None:
+                is_running = False
+                print(f'"{game.winner()}" won!')
+                print('Final position: ')
+                self.print_board()
+
+            # tie
+            if game.is_tie():
+                is_running = False
+                print('It is a tie!')
+                print('Final position: ')
+                self.print_board()
+
+        print('Broke out of game loop')
 
 
-# TODO: print the game board
-def print_board(board):
-    print(board[0] + ' | ' + board[1] + ' | ' + board[2])
-    print(dashes(9))
-    print(board[3] + ' | ' + board[4] + ' | ' + board[5])
-    print(dashes(9))
-    print(board[6] + ' | ' + board[7] + ' | ' + board[8])
-
-
-# TODO: take player input
-def player_input(board, current_player):
-    inp = int(input('Enter a number 0-8: '))
-
-    is_board_position = 0 <= inp <= 8
-    is_empty = board[inp] == '-'
-
-    if is_board_position and is_empty:
-        board[inp] = current_player
-
-
-# TODO: check for win or tie conditions
 class CheckGame:
-    def __init__(self, board):
-        self.board = board
+    def __init__(self, game_board):
+        self.board = game_board
 
     def is_dash(self, position) -> bool:
         if self.board[position] == '-':
@@ -88,37 +118,5 @@ class CheckGame:
         return '-' not in self.board
 
 
-# TODO: switch the player
-# TODO: check for win or tie again
-
-# TODO: game loop runner
-def game_loop(is_running=True, current_player='X'):
-    while is_running:
-        print_board(board)
-        player_input(board, current_player)
-
-        if current_player == 'X':
-            current_player = 'O'
-
-        elif current_player == 'O':
-            current_player = 'X'
-
-        # winner
-        if CheckGame(board).winner() is not None:
-            is_running = False
-            print(f'"{CheckGame(board).winner()}" won!')
-            print('Final position: ')
-            print_board(board)
-
-        # tie
-        if CheckGame(board).is_tie():
-            is_running = False
-            print('It is a tie!')
-            print('Final position: ')
-            print_board(board)
-
-    print('Broke out of game loop')
-
-
 if __name__ == '__main__':
-    game_loop()
+    TicTacToe(board).game_loop()
