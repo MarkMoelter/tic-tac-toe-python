@@ -1,15 +1,15 @@
 # FIXME: Skips player if they select a taken square
 
-board = [
-    '-', '-', '-',
-    '-', '-', '-',
-    '-', '-', '-',
-]
-
-
 class TicTacToe:
-    def __init__(self, game_board):
-        self.board = game_board
+    def __init__(self):
+        self.board = [
+            '-', '-', '-',
+            '-', '-', '-',
+            '-', '-', '-',
+        ]
+
+        # runs the game
+        self.game_loop()
 
     def print_board(self):
         def dashes(num_dashes: int) -> str:
@@ -119,4 +119,4 @@ class CheckGame:
 
 
 if __name__ == '__main__':
-    TicTacToe(board).game_loop()
+    TicTacToe()
