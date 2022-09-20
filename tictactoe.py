@@ -1,4 +1,5 @@
-# FIXME: Skips player if they select a taken square
+from check_winner import CheckWinner
+
 
 class TicTacToe:
     def __init__(self):
@@ -8,115 +9,80 @@ class TicTacToe:
             '-', '-', '-',
         ]
 
-        # runs the game
-        self.game_loop()
+    @staticmethod
+    def dashes(num_dashes: int) -> str:
+        """
+        Returns a string containing the number of hyphens specified.
+
+        :param num_dashes: How many hyphens to add to the string.
+        :return: The string of hyphens.
+        """
+        out = ''
+        for _ in range(num_dashes):
+            out += '-'
+        return out
 
     def print_board(self):
-        def dashes(num_dashes: int) -> str:
-            out = ''
-
-            for _ in range(num_dashes):
-                out += '-'
-
-            return out
-
+        """
+        Print the board in the terminal.
+        """
         print(self.board[0] + ' | ' + self.board[1] + ' | ' + self.board[2])
-        print(dashes(9))
+        print(self.dashes(9))
         print(self.board[3] + ' | ' + self.board[4] + ' | ' + self.board[5])
-        print(dashes(9))
+        print(self.dashes(9))
         print(self.board[6] + ' | ' + self.board[7] + ' | ' + self.board[8])
 
-    def player_input(self, current_player):
-        inp = int(input('Enter a number 0-8: '))
+    def player_input(self, current_player) -> None:
+        """
+        Take the player's input and put in on the board.
+        Repeats until the player enters a valid state.
 
-        is_board_position = 0 <= inp <= 8
-        is_empty = self.board[inp] == '-'
+        :param current_player: The character of the current player.
+        """
+        while True:
+            player_input = int(input(f'"{current_player}", enter a number 0-8: '))
 
-        if is_board_position and is_empty:
-            self.board[inp] = current_player
+            is_board_position = 0 <= player_input <= 8
+            is_empty = self.board[player_input] == '-'
 
-    def game_loop(self, is_running=True, current_player='X'):
-        while is_running:
+            if is_board_position and is_empty:
+                self.board[player_input] = current_player
+                break
+            else:
+                print(f'"{player_input}" is not a valid board position.')
+
+    def play_game(self, current_player='X'):
+        """
+        Main loop for Tic Tac Toe.
+        Print the current board state,
+        then asks for the current player's input,
+        then checks for wins or ties,
+        finally swaps the current player.
+        """
+        while True:
             self.print_board()
             self.player_input(current_player)
 
-            if current_player == 'X':
-                current_player = 'O'
-
-            elif current_player == 'O':
-                current_player = 'X'
-
-            game = CheckGame(self.board)
+            game = CheckWinner(self.board)
             # winner
-            if game.winner() is not None:
-                is_running = False
-                print(f'"{game.winner()}" won!')
+            if game.winner():
+                print(f'"{current_player}" won!')
                 print('Final position: ')
                 self.print_board()
+                break
 
             # tie
-            if game.is_tie():
-                is_running = False
+            elif game.is_tie():
                 print('It is a tie!')
                 print('Final position: ')
                 self.print_board()
+                break
 
-        print('Broke out of game loop')
-
-
-class CheckGame:
-    def __init__(self, game_board):
-        self.board = game_board
-
-    def is_dash(self, position) -> bool:
-        if self.board[position] == '-':
-            return True
-
-    def winner(self):
-        winning_player = [self.hori(), self.vert(), self.diag()]
-        for ele in winning_player:
-            if ele is not None:
-                return ele
-
-    def hori(self):
-        """
-        Check if a player won horizontally.
-
-        :return:
-        """
-        for row in range(0, 8, 3):
-            is_row_equal = self.board[row] == self.board[row + 1] == self.board[row + 2]
-
-            if is_row_equal and not self.is_dash(row):
-                return self.board[row]
-
-    def vert(self):
-        """
-        Check if a player won vertically.
-
-        :return:
-        """
-        for col in range(3):
-            is_col_equal = self.board[col] == self.board[col + 3] == self.board[col + 6]
-
-            if is_col_equal and not self.is_dash(col):
-                return self.board[col]
-
-    def diag(self):
-        """
-        Check if a player won diagonally.
-
-        :return:
-        """
-        if self.board[0] == self.board[4] == self.board[8] and not self.is_dash(0):
-            return self.board[0]
-
-        if self.board[2] == self.board[4] == self.board[6] and not self.is_dash(2):
-            return self.board[2]
-
-    def is_tie(self):
-        return '-' not in self.board
+            if current_player == 'X':
+                current_player = 'O'
+            elif current_player == 'O':
+                current_player = 'X'
 
 
 if __name__ == '__main__':
-    TicTacToe()
+    TicTacToe().play_game()
